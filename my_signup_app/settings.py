@@ -1,30 +1,21 @@
-"""
-Django settings for my_signup_app project.
-"""
-
 from pathlib import Path
 import os
 
 # -----------------------------
-# Load .env only if it exists (for local development)
+# BASE DIR
 # -----------------------------
-from dotenv import load_dotenv
-
 BASE_DIR = Path(__file__).resolve().parent.parent
-dotenv_path = BASE_DIR / ".env"
-if dotenv_path.exists():
-    load_dotenv(dotenv_path)
 
 # -----------------------------
 # SECURITY
 # -----------------------------
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("DJANGO_SECRET_KEY environment variable not set!")
 
-DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("true", "1", "yes")
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
 # -----------------------------
 # APPLICATIONS
@@ -36,7 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "myapp",  # your bot app
+    "myapp",
 ]
 
 # -----------------------------
@@ -60,7 +51,7 @@ ROOT_URLCONF = "my_signup_app.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # Optional global templates
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -109,20 +100,16 @@ USE_TZ = True
 # STATIC FILES
 # -----------------------------
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]  # Optional
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# -----------------------------
-# DEFAULT PRIMARY KEY
-# -----------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # -----------------------------
-# TWILIO CREDENTIALS
+# TWILIO (from environment)
 # -----------------------------
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
 
-# Fallback check
 if not all([TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER]):
-    raise ValueError("Twilio environment variables not properly set!")
+    raise ValueError("Twilio environment variables not set!")
