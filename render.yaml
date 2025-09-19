@@ -22,4 +22,4 @@ services:
       - key: TWILIO_PHONE_NUMBER
         value: "whatsapp:+14155238886"
       - key: PYTHON_VERSION
-        value: "3.13"
+        value: "3.12"
