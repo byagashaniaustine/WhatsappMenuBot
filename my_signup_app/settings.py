@@ -1,17 +1,32 @@
+"""
+Django settings for my_signup_app project.
+"""
+
 from pathlib import Path
 import os
+
+# -----------------------------
+# Load .env only if it exists (for local development)
+# -----------------------------
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")  # Load env from project root
+dotenv_path = BASE_DIR / ".env"
+if dotenv_path.exists():
+    load_dotenv(dotenv_path)
 
-SECRET_KEY=os.getenv("DJANGO_SECRET_KEY")
+# -----------------------------
+# SECURITY
+# -----------------------------
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("DJANGO_SECRET_KEY environment variable not set!")
 
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("true", "1", "yes")
+
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
+# -----------------------------
 # APPLICATIONS
 # -----------------------------
 INSTALLED_APPS = [
@@ -102,12 +117,12 @@ STATICFILES_DIRS = [BASE_DIR / "static"]  # Optional
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # -----------------------------
-# TWILIO CREDENTIALS (from environment)
+# TWILIO CREDENTIALS
 # -----------------------------
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
-# Fallback checks for Twilio
+# Fallback check
 if not all([TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER]):
-    raise ValueError("Twilio environment variables not properly set in .env or Railway")
+    raise ValueError("Twilio environment variables not properly set!")
