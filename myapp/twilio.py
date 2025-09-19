@@ -1,35 +1,40 @@
+# myapp/twilio.py
+
 import os
+from typing import cast
 from twilio.rest import Client
 from dotenv import load_dotenv
 
-# Load .env variables
+# Load environment variables from .env
 load_dotenv()
 
-ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+# Twilio credentials
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID") or ""
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN") or ""
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER") or ""
 
-if not ACCOUNT_SID or not AUTH_TOKEN or not TWILIO_WHATSAPP_NUMBER:
-    raise ValueError(
-        "Twilio credentials are missing. Please set TWILIO_ACCOUNT_SID, "
-        "TWILIO_AUTH_TOKEN, and TWILIO_WHATSAPP_NUMBER in your .env file."
+# Validate environment variables
+if not all([TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER]):
+    raise EnvironmentError(
+        "Twilio credentials are missing. "
+        "Please set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER in .env"
     )
 
-client = Client(ACCOUNT_SID, AUTH_TOKEN)
+# Initialize Twilio client
+client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 def send_whatsapp_message(to: str, body: str) -> str:
     """
     Send a WhatsApp message using Twilio.
-    Raises ValueError if `to` does not start with 'whatsapp:'.
-    Returns message SID (string).
-    """
-    if not to.startswith("whatsapp:"):
-        raise ValueError("Recipient number must start with 'whatsapp:'")
 
+    :param to: WhatsApp number of recipient (format: whatsapp:+255XXXXXXXXX)
+    :param body: Message text
+    :return: Twilio message SID (str)
+    """
     message = client.messages.create(
-        from_=TWILIO_WHATSAPP_NUMBER,
+        from_=TWILIO_PHONE_NUMBER,
         body=body,
         to=to
     )
-    assert message.sid is not None, "Twilio did not return a SID"  # helps Pylance
-    return message.sid
+    # Cast to str for Pylance type checking
+    return cast(str, message.sid)
