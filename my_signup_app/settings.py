@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-e69ejovtw0efd$f9(eo_iv!bq^v3)k4#$5!tce=c&f2^^37e99'
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*']  # '*' for testing with ngrok only
+ALLOWED_HOSTS = ['*']  # '*' for testing with ngrok only
 
 # APPLICATIONS
 INSTALLED_APPS = [
