@@ -1,30 +1,17 @@
-"""
-Django settings for my_signup_app project.
-"""
-
 from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
-# -----------------------------
-# Load environment variables
-# -----------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")  # Make sure .env is at project root
+load_dotenv(BASE_DIR / ".env")  # Load env from project root
 
-# -----------------------------
-# SECURITY
-# -----------------------------
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("DJANGO_SECRET_KEY environment variable not set!")
 
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")  # comma-separated list
-
-# -----------------------------
 # APPLICATIONS
 # -----------------------------
 INSTALLED_APPS = [
