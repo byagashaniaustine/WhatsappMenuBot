@@ -1,7 +1,0 @@
-from supabase import create_client, Client
-import os
-
-SUPABASE_URL="https://xoimjxsmmesvboebrtyu.supabase.co"
-SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvaW1qeHNtbWVzdmJvZWJydHl1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTc4MDA2NiwiZXhwIjoyMDcxMzU2MDY2fQ.o8an8udRAXMAAszcQ-P4T6t4Q9KiSRr8Gz9PE1s_izc"
-
-supabase:Client=create_client(SUPABASE_URL,SUPABASE_KEY)
