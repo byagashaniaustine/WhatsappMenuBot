@@ -1,1 +1,2 @@
-web: gunicorn my_signup_app.wsgi
+web: gunicorn my_signup_app.wsgi:application --bind 0.0.0.0:$PORT --workers 2
+
