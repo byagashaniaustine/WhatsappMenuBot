@@ -13,7 +13,7 @@ DJANGO_SECRET_KEY= os.environ.get("DJANGO_SECRET_KEY")
 
 print("DJANGO_SECRET_KEY:", os.environ.get("DJANGO_SECRET_KEY"))
 
-if not SECRET_KEY:
+if not DJANGO_SECRET_KEY:
     raise ValueError("DJANGO_SECRET_KEY environment variable not set!")
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
@@ -116,3 +116,4 @@ TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
 
 if not all([TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER]):
     raise ValueError("Twilio environment variables not set!")
+
