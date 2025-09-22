@@ -14,7 +14,7 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 # Allow Railway, localhost, and Twilio requests
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
-    "localhost 127.0.0.1 0.0.0.0 whatsappmenubot-production.up.railway.app"
+    "*"
 ).split()
 
 # --------------------
