@@ -4,76 +4,78 @@ from django.http import HttpResponse
 from twilio.twiml.messaging_response import MessagingResponse
 import logging
 
-logger = logging.getLogger(__name__)
+# Use the "myapp" logger from settings.py
+logger = logging.getLogger("myapp")
 
 @csrf_exempt
 def whatsapp_webhook(request):
-    if request.method == "POST":
-        # Get message and normalize
-        incoming_msg = request.POST.get("Body", "").strip().lower()
-        from_number = request.POST.get("From", "")
+    """Handle incoming WhatsApp messages from Twilio."""
+    if request.method != "POST":
+        return HttpResponse("OK")  # Twilio may send GET to verify endpoint
 
-        # Log incoming request (for debugging)
-        logger.info(f"📩 Incoming WhatsApp message from {from_number}: {incoming_msg}")
+    # Extract incoming message and sender number
+    incoming_msg = request.POST.get("Body", "").strip().lower()
+    from_number = request.POST.get("From", "")
 
-        resp = MessagingResponse()
+    # Log incoming message for debugging
+    logger.info(f"📩 Incoming WhatsApp message from {from_number}: '{incoming_msg}'")
 
-        # Dictionary for menu options
-        menu = {
-            "1": (
-                "📈 *Improving Credit Score Tips:*\n"
-                "- Pay bills on time ✅\n"
-                "- Keep credit usage below 30%\n"
-                "- Limit applying for too many loans\n"
-                "- Check your credit report regularly"
-            ),
-            "2": (
-                "🏦 *Qualify for a Loan:*\n"
-                "- Maintain a stable income source\n"
-                "- Build a good repayment history\n"
-                "- Reduce existing debt before applying\n"
-                "- Prepare all required documents early"
-            ),
-            "3": (
-                "💡 *Smart Debt Repayment:*\n"
-                "- Pay more than the minimum if possible\n"
-                "- Focus on high-interest debt first (avalanche method)\n"
-                "- Avoid unnecessary new loans\n"
-                "- Create a realistic repayment plan"
-            ),
-            "4": (
-                "⚠️ *Common Mistakes to Avoid:*\n"
-                "- Missing payment deadlines\n"
-                "- Using all available credit\n"
-                "- Taking too many short-term loans\n"
-                "- Ignoring your credit report"
-            ),
-            "5": "☎️ Our financial coach will reach out to you soon!"
-        }
+    resp = MessagingResponse()
 
-        # MAIN MENU (triggers when user says hi, hello, menu, start)
-        if incoming_msg in ["hi", "hello", "start", "menu", ""]:
-            resp.message(
-                "👋 *Welcome to CreditTips Bot!*\n"
-                "💡 Choose a topic to learn about:\n\n"
-                "1️⃣ How to improve your credit score\n"
-                "2️⃣ How to qualify for a loan\n"
-                "3️⃣ Smart ways to repay debt\n"
-                "4️⃣ Avoiding common credit mistakes\n"
-                "5️⃣ Talk to a financial coach"
-            )
+    # Menu options dictionary
+    menu = {
+        "1": (
+            "📈 *Improving Credit Score Tips:*\n"
+            "- Pay bills on time ✅\n"
+            "- Keep credit usage below 30%\n"
+            "- Limit applying for too many loans\n"
+            "- Check your credit report regularly"
+        ),
+        "2": (
+            "🏦 *Qualify for a Loan:*\n"
+            "- Maintain a stable income source\n"
+            "- Build a good repayment history\n"
+            "- Reduce existing debt before applying\n"
+            "- Prepare all required documents early"
+        ),
+        "3": (
+            "💡 *Smart Debt Repayment:*\n"
+            "- Pay more than the minimum if possible\n"
+            "- Focus on high-interest debt first (avalanche method)\n"
+            "- Avoid unnecessary new loans\n"
+            "- Create a realistic repayment plan"
+        ),
+        "4": (
+            "⚠️ *Common Mistakes to Avoid:*\n"
+            "- Missing payment deadlines\n"
+            "- Using all available credit\n"
+            "- Taking too many short-term loans\n"
+            "- Ignoring your credit report"
+        ),
+        "5": "☎️ Our financial coach will reach out to you soon!"
+    }
 
-        # MATCH USER RESPONSE TO MENU
-        elif incoming_msg in menu:
-            resp.message(menu[incoming_msg])
+    # MAIN MENU triggers
+    if incoming_msg in ["hi", "hello", "start", "menu", ""]:
+        resp.message(
+            "👋 *Welcome to Credit/Loan Tips Bot!*\n"
+            "💡 Choose a topic to learn about:\n\n"
+            "1️⃣ How to improve your credit score\n"
+            "2️⃣ How to qualify for a loan\n"
+            "3️⃣ Smart ways to repay debt\n"
+            "4️⃣ Avoiding common credit mistakes\n"
+            "5️⃣ Talk to a financial coach"
+        )
+    # Respond to menu selections
+    elif incoming_msg in menu:
+        resp.message(menu[incoming_msg])
+    # Handle invalid input
+    else:
+        resp.message(
+            "🤔 I didn't get that. Please reply with *menu* to see the topics again."
+        )
 
-        # INVALID RESPONSE
-        else:
-            resp.message(
-                "🤔 I didn't get that. Please reply with *menu* to see the topics again."
-            )
+    # Log outgoing response
+    logger.info(f"✉️ Sending response to {from_number}")
 
-        return HttpResponse(str(resp))
-
-    # If GET request, just return OK
-    return HttpResponse("OK")
+    return HttpResponse(str(resp))

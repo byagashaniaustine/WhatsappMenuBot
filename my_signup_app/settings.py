@@ -1,5 +1,8 @@
+# settings.py
 from pathlib import Path
 import os
+import logging
+import sys
 
 # -----------------------------
 # BASE DIR
@@ -9,10 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -----------------------------
 # SECURITY
 # -----------------------------
-DJANGO_SECRET_KEY= os.environ.get("DJANGO_SECRET_KEY")
-
-print("DJANGO_SECRET_KEY:", os.environ.get("DJANGO_SECRET_KEY"))
-
+DJANGO_SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not DJANGO_SECRET_KEY:
     raise ValueError("DJANGO_SECRET_KEY environment variable not set!")
 
@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "myapp",
+    "myapp",  # your webhook app
 ]
 
 # -----------------------------
@@ -40,7 +40,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",  # Use @csrf_exempt for webhook
+    "django.middleware.csrf.CsrfViewMiddleware",  # use @csrf_exempt for webhook
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -108,7 +108,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # -----------------------------
-# TWILIO (from environment)
+# TWILIO CREDENTIALS
 # -----------------------------
 TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
@@ -117,3 +117,41 @@ TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
 if not all([TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER]):
     raise ValueError("Twilio environment variables not set!")
 
+# -----------------------------
+# LOGGING (to stdout for Railway)
+# -----------------------------
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "format": "[%(asctime)s] %(levelname)s %(name)s: %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+            "formatter": "default",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "myapp": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
+
+# -----------------------------
+# DEBUG LOGGING (optional)
+# -----------------------------
+logging.info(f"DJANGO_SECRET_KEY: {DJANGO_SECRET_KEY}")
+logging.info(f"DEBUG: {DEBUG}")
+logging.info(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+logging.info(f"Twilio SID: {TWILIO_ACCOUNT_SID}")
