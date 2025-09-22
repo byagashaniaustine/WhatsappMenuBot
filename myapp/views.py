@@ -6,21 +6,22 @@ import logging
 
 # Use the "myapp" logger from settings.py
 logger = logging.getLogger("myapp")
-
 @csrf_exempt
 def whatsapp_webhook(request):
-    """Handle incoming WhatsApp messages from Twilio."""
-    if request.method == "POST":
-        return HttpResponse("OK")  # Twilio may send GET to verify endpoint
+    try:
+        if request.method == "POST":
+            incoming_msg = request.POST.get("Body", "").strip().lower()
+            from_number = request.POST.get("From", "")
+            logger.info(f"📩 Incoming WhatsApp message from {from_number}: {incoming_msg}")
+            
+            resp = MessagingResponse()
+            # ... rest of your menu logic ...
+            return HttpResponse(str(resp))
+        return HttpResponse("OK")
+    except Exception as e:
+        logger.exception("Webhook failed:")
+        return HttpResponse("Internal Server Error", status=500)
 
-    # Extract incoming message and sender number
-    incoming_msg = request.POST.get("Body", "").strip().lower()
-    from_number = request.POST.get("From", "")
-
-    # Log incoming message for debugging
-    logger.info(f"📩 Incoming WhatsApp message from {from_number}: '{incoming_msg}'")
-
-    resp = MessagingResponse()
 
     # Menu options dictionary
     menu = {
