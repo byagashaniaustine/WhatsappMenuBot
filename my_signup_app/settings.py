@@ -147,6 +147,10 @@ LOGGING = {
         },
     },
 }
+print("DJANGO_SECRET_KEY:", os.environ.get("DJANGO_SECRET_KEY"))
+print("TWILIO_ACCOUNT_SID:", os.environ.get("TWILIO_ACCOUNT_SID"))
+print("TWILIO_AUTH_TOKEN:", os.environ.get("TWILIO_AUTH_TOKEN"))
+print("TWILIO_PHONE_NUMBER:", os.environ.get("TWILIO_PHONE_NUMBER"))
 
 # -----------------------------
 # DEBUG LOGGING (optional)
