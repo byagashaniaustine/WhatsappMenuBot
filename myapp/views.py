@@ -10,7 +10,7 @@ logger = logging.getLogger("myapp")
 @csrf_exempt
 def whatsapp_webhook(request):
     """Handle incoming WhatsApp messages from Twilio."""
-    if request.method != "POST":
+    if request.method == "POST":
         return HttpResponse("OK")  # Twilio may send GET to verify endpoint
 
     # Extract incoming message and sender number
